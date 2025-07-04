@@ -96,7 +96,7 @@ def pantalla_ingreso_nombre(ventana)-> any:
 
     Returns:
         str: El nombre ingresado como texto (sin espacios iniciales/finales) si el usuario confirma con ENTER
-        None: Si la ventana se cierra antes de confirmar, devuelve None.
+        None: Si la ventana se cierra antes de confirmar, devuelve None
     """
     
     fuente = pygame.font.SysFont("Arial", 22)
@@ -157,7 +157,7 @@ def valida_respuesta(pregunta:dict, respuesta:chr) -> bool:
 
 def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
     """
-    Muestra una pantalla interactiva en Pygame que muestra la pregunta a responder y permite con el click izquierdo seleccionar sus posibles respuestas.
+    Muestra una pantalla interactiva en Pygame que muestra la pregunta a responder y permite con el click izquierdo seleccionar sus posibles respuestas
     Requiere importar el módulo "Colores"
     Requiere la funcion "selecciona_pregunta"
     Requiere la funcion "valida_respuesta"
@@ -168,9 +168,10 @@ def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
     - Permite al usuario hacer click izquierdo en cualquiera de las 3 opcines para marcar cual elije
     - Chequea si la opcion es correcta o no, si lo es elimina la pregunta de la lista para que no se vuelva a preguntar
     - Finaliza y retorna el valor booleano de esa comparación
+    - Si el usuario no responde en 15 segundos devuelve False
     
     Args:
-        ventana: Superficie de Pygame donde se dibuja la interfaz de entrada de texto.
+        ventana: Superficie de Pygame donde se dibuja la interfaz de entrada de texto
         
         ancho (int): El ancho de la ventana
         
@@ -203,6 +204,8 @@ def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
     resp_selec = None
     res = None
     flag_seguir = True
+    tiempo_inicio = pygame.time.get_ticks()
+    tiempo_limite = 15000
     while flag_seguir:
         
         ventana.fill(colores.WHITE)
@@ -215,6 +218,13 @@ def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
         ventana.blit(texto_resp_a, rect_resp_a.topleft)
         ventana.blit(texto_resp_b, rect_resp_b.topleft)
         ventana.blit(texto_resp_c, rect_resp_c.topleft)
+        
+        tiempo_actual = pygame.time.get_ticks()
+        tiempo_restante_ms = tiempo_limite - (tiempo_actual - tiempo_inicio)
+        tiempo_restante_seg = max(0, tiempo_restante_ms // 1000)
+        
+        texto_timer = fuente.render(f"Tiempo: {tiempo_restante_seg}s", True, colores.BLACK)
+        ventana.blit(texto_timer, (ancho - texto_timer.get_width() - 10, 10))
         
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -233,6 +243,10 @@ def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
                         flag_seguir = False
                         resp_selec = "c"
 
+        if tiempo_restante_ms <= 0:
+            flag_seguir = False
+            res = False
+        
         if resp_selec is not None:
             res = valida_respuesta(preg_selec, resp_selec)
         if res:
@@ -342,7 +356,7 @@ def pantalla_sigue_jugando(ventana, ancho) -> any:
 def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> any:
     """
     Función que muestra la pantalla de resultado final al terminar el juego,
-    indicando si el jugador ganó o perdió, su posición y puntaje.
+    indicando si el jugador ganó o perdió, su posición y puntaje. en ammbos casos suena un audo de fondo dependiendo del resultado
 
     Args:
         ventana: Objeto ventana de pygame donde se renderiza la pantalla.
@@ -358,6 +372,9 @@ def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> an
     y_inicial = 150
     espaciado = 150
     
+    sonido_gano = pygame.mixer.Sound("./pygame/sonido_gano.mp3")
+    sonido_perdio = pygame.mixer.Sound("./pygame/sonido_perdio.mp3")
+
     fuente = pygame.font.SysFont("Arial", 22)
     texto_ganador = fuente.render("¡¡¡GANADOR!!!", True, colores.BLACK)
     texto_termino_juego = fuente.render("Se terminó el juego", True, colores.BLACK)
@@ -373,9 +390,14 @@ def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> an
     
     res = None
     flag_seguir = True
-    
+    sonido_reproducido = False
+
     while flag_seguir:
         if resultado == "gano":
+            if not sonido_reproducido:
+                sonido_gano.play()
+                sonido_reproducido = True
+            
             ventana.fill(colores.WHITE)
             ventana.blit(texto_ganador, rect_ganador.topleft)
             ventana.blit(texto_posicion, rect_posicion.topleft)
@@ -394,6 +416,11 @@ def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> an
                             flag_seguir = False
 
         elif resultado == "perdio":
+            if not sonido_reproducido:
+                sonido_perdio.play()
+                sonido_reproducido = True
+
+            
             ventana.fill(colores.WHITE)
             ventana.blit(texto_termino_juego, rect_termino_juego.topleft)
             ventana.blit(texto_posicion, rect_posicion.topleft)
@@ -430,7 +457,7 @@ def ejecutar_juego(ventana, ancho, preguntas) -> str:
     """
     res = None
     quiere_seguir = None
-    pos_jugador = 15
+    pos_jugador = 29
     puntaje = 0
     flag_preguntas = True
     ejecutando = True
