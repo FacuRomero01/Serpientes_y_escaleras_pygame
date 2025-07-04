@@ -3,10 +3,32 @@ import pygame
 
 
 def guarda_puntaje(nombre, posicion, puntaje):
+    """
+    Función que guarda el puntaje del jugador en un archivo CSV.
+
+    Args:
+        nombre (str): Nombre del jugador.
+        posicion (int): Posición final alcanzada en el juego.
+        puntaje (int): Puntaje obtenido por el jugador.
+
+    Return:
+        None
+    """
     with open("scores.csv", "a") as archivo:
         archivo.write(f"{nombre},{posicion},{puntaje}\n")
 
 def pantalla_muestra_puntaje(ventana, ancho):
+    """
+    Función que muestra en pantalla los últimos seis puntajes almacenados
+    en el archivo de puntajes, con la opción de volver al menú.
+
+    Args:
+        ventana: Objeto ventana de pygame donde se renderiza la pantalla.
+        ancho (int): Ancho de la ventana, utilizado para centrar los textos.
+
+    Return:
+        str: Devuelve "menu" si el usuario decide volver al menú, o "salir" si cierra la ventana.
+    """
     coord_x_centro = ancho // 2
     y_inicial = 50
     espaciado = 50

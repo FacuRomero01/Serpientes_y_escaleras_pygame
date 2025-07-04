@@ -5,6 +5,17 @@ from puntajes import pantalla_muestra_puntaje
 from preguntas import preguntas
 
 def main():
+    """
+    Función principal del programa. Inicializa pygame, configura la ventana
+    y controla el flujo de navegación del juego a través de los distintos estados
+    (menú, jugar, puntajes, salir).
+
+    Args:
+        No recibe argumentos.
+
+    Return:
+        None
+    """
     pygame.init()
     
     # Configuración inicial

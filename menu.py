@@ -2,6 +2,19 @@ import pygame
 import colores
 
 def menu_principal(ventana, ancho):
+    """
+    Función que muestra el menú principal del juego, permitiendo al usuario
+    elegir entre jugar, ver puntajes o salir.
+
+    Args:
+        ventana: Objeto ventana de pygame donde se renderiza el menú.
+        ancho (int): Ancho de la ventana, utilizado para centrar los botones.
+
+    Return:
+        str: Devuelve "jugar" si se selecciona comenzar el juego,
+            "puntajes" si se selecciona ver puntajes,
+            o "salir" si se decide salir del juego.
+    """
     fondo = pygame.image.load("./pygame/fondo.jpg")
 
     coord_x_centro = ancho // 2
@@ -38,15 +51,12 @@ def menu_principal(ventana, ancho):
             if evento.type == pygame.MOUSEBUTTONDOWN:
                     if evento.button == 1:
                         if rect_jugar.collidepoint(evento.pos):
-                            print("Elegiste JUGAR")
                             flag_correr = False
                             res = "jugar"
                         elif rect_puntajes.collidepoint(evento.pos):
-                            print("Elegiste PUNTAJES")
                             flag_correr = False
                             res = "puntajes"
                         elif rect_salir.collidepoint(evento.pos):
-                            print("Elegiste SALIR")
                             flag_correr = False
                             res = "salir"
 

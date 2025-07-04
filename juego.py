@@ -78,7 +78,7 @@ def capturar_texto(texto_actual:str, evento) -> str:
         texto_actual += evento.unicode
     return texto_actual
 
-def pantalla_ingreso_nombre(ventana):
+def pantalla_ingreso_nombre(ventana)-> any:
     """
     Muestra una pantalla interactiva en Pygame para permitir al usuario ingresar su nombre.
     Requiere importar el módulo "Colores"
@@ -126,16 +126,61 @@ def pantalla_ingreso_nombre(ventana):
         pygame.display.flip()
 
 def selecciona_pregunta(preguntas:list) -> dict:
+    """
+    Función que utiliza "random" para elegir una pregunta al azar de una lista de preguntas
+
+    Args:
+        preguntas (list): lista que contiene multiples preguntas
+
+    Return:
+        dict: Devuelve la pregunta seleccionada 
+    """
     preg_selec = random.choice(preguntas)
     return preg_selec
 
 def valida_respuesta(pregunta:dict, respuesta:chr) -> bool:
+    """
+    Función que valida si la respuesta seleccionada es la correcta
+
+    Args:
+        pregunta (dict): Diccionario que contiene la pregunta, cada opcion y la repsuesta correcta
+
+        respuesta (chr): Letra que representa la opcion a chequar si es correcta o no
+
+    Return:
+        Bool: Devuelve True si es la opción correcta y False si es incorrecta
+    """
     if respuesta == "a" or respuesta == "b" or respuesta == "c":
             res = respuesta == pregunta["respuesta_correcta"]
             
     return res
 
-def pantalla_preguntas(ventana, ancho, preguntas):
+def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
+    """
+    Muestra una pantalla interactiva en Pygame que muestra la pregunta a responder y permite con el click izquierdo seleccionar sus posibles respuestas.
+    Requiere importar el módulo "Colores"
+    Requiere la funcion "selecciona_pregunta"
+    Requiere la funcion "valida_respuesta"
+    Requiere pygame previamente inicializado
+
+    La función:
+    - Muestra por pantalla la pregunta a responder con sus 3 posibles opciones
+    - Permite al usuario hacer click izquierdo en cualquiera de las 3 opcines para marcar cual elije
+    - Chequea si la opcion es correcta o no, si lo es elimina la pregunta de la lista para que no se vuelva a preguntar
+    - Finaliza y retorna el valor booleano de esa comparación
+    
+    Args:
+        ventana: Superficie de Pygame donde se dibuja la interfaz de entrada de texto.
+        
+        ancho (int): El ancho de la ventana
+        
+        preguntas (list): lista que contiene multiples preguntas
+
+    Returns:
+        Bool: devuelve el valor booleano True si es correcta la respuesta y False si no lo es
+        str: En el caso que cierre la ventana devuelve "salir"
+    """
+    
     coord_x_centro = ancho // 2
     y_inicial = 200
     espaciado = 150
@@ -198,6 +243,15 @@ def pantalla_preguntas(ventana, ancho, preguntas):
     return res
 
 def aplica_escaleras(posicion) -> int:
+    """
+    Función que aplica el efecto de una escalera en la posición indicada.
+
+    Args:
+        posicion (int): La posición actual del jugador en el tablero.
+
+    Return:
+        int: Devuelve la nueva posición luego de aplicar la escalera (si corresponde).
+    """
     salto = serp_esc[posicion]
     if salto > 0:
         print(f"¡Escalera! Avanzás {salto} casillas.")
@@ -208,6 +262,15 @@ def aplica_escaleras(posicion) -> int:
     return res
 
 def aplica_serpientes(posicion) -> int:
+    """
+    Función que aplica el efecto de una serpiente en la posición indicada.
+
+    Args:
+        posicion (int): La posición actual del jugador en el tablero.
+
+    Return:
+        int: Devuelve la nueva posición luego de aplicar la serpiente (si corresponde).
+    """
     salto = serp_esc[posicion]
     if salto > 0:
         print(f"¡Serpiente! Retrocedes {salto} casillas.")
@@ -217,7 +280,18 @@ def aplica_serpientes(posicion) -> int:
     
     return res
 
-def pantalla_sigue_jugando(ventana, ancho) -> bool:
+def pantalla_sigue_jugando(ventana, ancho) -> any:
+    """
+    Función que muestra una pantalla para consultar al jugador si desea seguir jugando.
+
+    Args:
+        ventana: Objeto ventana de pygame donde se renderiza la pantalla.
+        ancho (int): Ancho de la ventana, utilizado para centrar los textos.
+
+    Return:
+        bool: Devuelve True si el jugador desea seguir jugando, False si no
+        str: Devuelve "salir" si cierra la ventana.
+    """
     coord_x_centro = ancho // 2
     y_inicial = 200
     espaciado = 150
@@ -265,7 +339,21 @@ def pantalla_sigue_jugando(ventana, ancho) -> bool:
     
     return res
 
-def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado):
+def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> any:
+    """
+    Función que muestra la pantalla de resultado final al terminar el juego,
+    indicando si el jugador ganó o perdió, su posición y puntaje.
+
+    Args:
+        ventana: Objeto ventana de pygame donde se renderiza la pantalla.
+        ancho (int): Ancho de la ventana, utilizado para centrar los textos.
+        puntaje (int): Puntaje final obtenido por el jugador.
+        posicion (int): Posición final del jugador en el ranking o la partida.
+        resultado (str): Resultado del juego ("gano" o "perdio").
+
+    Return:
+        str: Devuelve "menu" si el usuario quiere volver al menú, o "salir" si cierra la ventana.
+    """
     coord_x_centro = ancho // 2
     y_inicial = 150
     espaciado = 150
@@ -326,8 +414,20 @@ def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado):
         pygame.display.flip()
     return res
 
-def ejecutar_juego(ventana, ancho, preguntas):
+def ejecutar_juego(ventana, ancho, preguntas) -> str:
+    """
+    Función principal que ejecuta el ciclo de juego, controlando el flujo de preguntas,
+    movimiento del jugador en el tablero, aplicación de serpientes y escaleras,
+    y la pantalla de resultados finales.
 
+    Args:
+        ventana: Objeto ventana de pygame donde se renderiza el juego.
+        ancho (int): Ancho de la ventana, utilizado para centrar elementos gráficos.
+        preguntas (list): Lista de preguntas que se utilizarán durante la partida.
+
+    Return:
+        str: Devuelve "menu" si el jugador quiere volver al menú, o "salir" si cierra el juego.
+    """
     res = None
     quiere_seguir = None
     pos_jugador = 15
