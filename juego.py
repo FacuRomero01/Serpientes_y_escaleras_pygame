@@ -39,7 +39,7 @@ def obtener_posicion_casilla(numero_casilla) -> tuple:
         # casilla 0 en esquina inferior izquierda (centro)
         x = 0 + tamaño_casilla // 2
         y = 600 - tamaño_casilla // 2
-        return (x, y)
+        res =  (x, y)
     
     fila = (numero_casilla - 1) // 6 + 1    # arranca en la fila 2
     columna_en_fila = (numero_casilla - 1) % 6
@@ -57,7 +57,8 @@ def obtener_posicion_casilla(numero_casilla) -> tuple:
     # centrar la ficha en la casilla
     x += tamaño_casilla // 2
     
-    return (x, y)
+    res = (x, y)
+    return res
 
 def capturar_texto(texto_actual:str, evento) -> str:
     """
