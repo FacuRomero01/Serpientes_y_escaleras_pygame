@@ -1,8 +1,9 @@
 import colores
 import pygame
 
+fondo = pygame.image.load("fondo.jpg")
 
-def guarda_puntaje(nombre, posicion, puntaje):
+def guarda_puntaje(nombre:str, posicion:int, puntaje:int):
     """
     Función que guarda el puntaje del jugador en un archivo CSV.
 
@@ -14,10 +15,12 @@ def guarda_puntaje(nombre, posicion, puntaje):
     Return:
         None
     """
-    with open("scores.csv", "a") as archivo:
+    with open("scores.csv", "a+") as archivo:
+        if archivo.tell() == 0: 
+            archivo.write("Nombre,Posicion,Puntaje\n") 
+        
         archivo.write(f"{nombre},{posicion},{puntaje}\n")
-
-def pantalla_muestra_puntaje(ventana, ancho):
+def pantalla_muestra_puntaje(ventana, ancho:int):
     """
     Función que muestra en pantalla los últimos seis puntajes almacenados
     en el archivo de puntajes, con la opción de volver al menú.
@@ -34,29 +37,35 @@ def pantalla_muestra_puntaje(ventana, ancho):
     espaciado = 50
     
     fuente = pygame.font.SysFont("Arial", 22)
-    
-    # Leer el archivo de puntajes
     puntajes = []
     with open("scores.csv", "r") as archivo:
-        next(archivo)
+        archivo.readline() 
         for linea in archivo:
             datos = linea.strip().split(",")
             if len(datos) == 3:
-                puntajes.append((datos[0], datos[1], datos[2]))  # (nombre, posicion, puntaje)
-    texto_titulo = fuente.render("Nombre - Casillero - Puntaje", True, colores.BLACK)
-    texto_menu= fuente.render("Menú", True, colores.BLACK)
+                puntajes.append((datos[0], datos[1], int(datos[2])))
+    
+    texto_titulo = fuente.render("Nombre - Casillero - Puntaje", True, colores.WHITE)
+    texto_menu= fuente.render("Menú", True, colores.WHITE)
     rect_menu= texto_menu.get_rect(center=(coord_x_centro, y_inicial + 100 + espaciado + 300))
 
-    ventana.fill(colores.WHITE)  # Limpia la ventana
+    ventana.blit(fondo, (0,0))
     ventana.blit(texto_menu, rect_menu.topleft)
     ventana.blit(texto_titulo, (coord_x_centro - texto_titulo.get_width() // 2, y_inicial))
-    # Mostrar cada puntaje
+    
+    for i in range(len(puntajes)):
+        for j in range(0, len(puntajes) - i - 1):
+            if puntajes[j][2] < puntajes[j + 1][2]:
+                puntajes[j], puntajes[j + 1] = puntajes[j + 1], puntajes[j]
 
-    ultimos_seis = puntajes[-6:]
-    for i, (nombre, posicion, puntaje) in enumerate(ultimos_seis):
-        texto_puntaje = fuente.render(f"{nombre} - Posición: {posicion} - Puntaje: {puntaje}", True, colores.BLACK)
+    primeros_seis = puntajes[:6]
+    for i in range(len(primeros_seis)):
+        nombre, posicion, puntaje = primeros_seis[i]
+        texto_puntaje = fuente.render(f"{nombre} - {posicion} - {puntaje}", True, colores.WHITE)
         ventana.blit(texto_puntaje, (coord_x_centro - texto_puntaje.get_width() // 2, y_inicial + espaciado * (i + 1)))
-    # Mantener la pantalla hasta que se presione una tecla
+        
+    
+
     flag_seguir = True
     while flag_seguir:
         for evento in pygame.event.get():
@@ -73,3 +82,6 @@ def pantalla_muestra_puntaje(ventana, ancho):
         pygame.display.flip()
 
     return res
+
+# caracteristicas de colecciones (listas, tuplas, sets, diccionarios)
+# modularización de funciones

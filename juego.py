@@ -10,10 +10,11 @@ serp_esc = [
     0
 ]
 
-tablero = pygame.image.load("./pygame/Tablero.png")
+tablero = pygame.image.load("Tablero.png")
 tablero = pygame.transform.scale(tablero, (600, 600))
+fondo = pygame.image.load("fondo.jpg")
 
-def obtener_posicion_casilla(numero_casilla) -> tuple:
+def obtener_posicion_casilla(numero_casilla:int) -> tuple:
     """
     Calcula la posicion del centro de una casilla del tablero de juego 6x6 con casillas del 0 al 30 (tablero de 600x600 px.)
     Las filas alternan se alternan en direccion de lectura como una S.
@@ -39,7 +40,7 @@ def obtener_posicion_casilla(numero_casilla) -> tuple:
         # casilla 0 en esquina inferior izquierda (centro)
         x = 0 + tamaño_casilla // 2
         y = 600 - tamaño_casilla // 2
-        res =  (x, y)
+        res = (x, y)
     
     fila = (numero_casilla - 1) // 6 + 1    # arranca en la fila 2
     columna_en_fila = (numero_casilla - 1) % 6
@@ -103,29 +104,30 @@ def pantalla_ingreso_nombre(ventana)-> any:
     fuente = pygame.font.SysFont("Arial", 22)
     texto_ingresado = ""
     ejecutando = True
+    res = None
     
     while ejecutando:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 ejecutando = False
-                return None
             elif evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_RETURN:
                     if texto_ingresado.strip() != "":
                         ejecutando = False
-                        return texto_ingresado
+                        res = texto_ingresado
                 else:
                     texto_ingresado = capturar_texto(texto_ingresado, evento)
         
-        ventana.fill(colores.WHITE)
-        mensaje = fuente.render("Ingrese su nombre y presione ENTER:", True, colores.BLACK)
-        texto_surface = fuente.render(texto_ingresado, True, colores.BLACK)
+        ventana.blit(fondo,(0,0))
+        mensaje = fuente.render("Ingrese su nombre y presione ENTER:", True, colores.WHITESMOKE)
+        texto_surface = fuente.render(texto_ingresado, True, colores.WHITESMOKE)
         
         ventana.blit(mensaje, (50, 200))
         ventana.blit(texto_surface, (50, 250))
         
         pygame.display.flip()
-
+    return res
+    
 def selecciona_pregunta(preguntas:list) -> dict:
     """
     Función que utiliza "random" para elegir una pregunta al azar de una lista de preguntas
@@ -156,7 +158,7 @@ def valida_respuesta(pregunta:dict, respuesta:chr) -> bool:
             
     return res
 
-def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
+def pantalla_preguntas(ventana, ancho:int, preguntas:list) -> bool:
     """
     Muestra una pantalla interactiva en Pygame que muestra la pregunta a responder y permite con el click izquierdo seleccionar sus posibles respuestas
     Requiere importar el módulo "Colores"
@@ -190,11 +192,12 @@ def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
     preg_selec = selecciona_pregunta(preguntas)
 
     fuente = pygame.font.SysFont("Arial", 22)
+    fuente_2 = pygame.font.SysFont("Arial", 20)
 
-    texto_pregunta = fuente.render(f"{preg_selec['pregunta']}", True, colores.BLACK)
-    texto_resp_a = fuente.render(f"a. {preg_selec['respuesta_a']}", True, colores.BLACK)
-    texto_resp_b = fuente.render(f"b. {preg_selec['respuesta_b']}", True, colores.BLACK)
-    texto_resp_c = fuente.render(f"c. {preg_selec['respuesta_c']}", True, colores.BLACK)
+    texto_pregunta = fuente_2.render(f"{preg_selec['pregunta']}", True, colores.WHITESMOKE)
+    texto_resp_a = fuente.render(f"a. {preg_selec['respuesta_a']}", True, colores.WHITESMOKE)
+    texto_resp_b = fuente.render(f"b. {preg_selec['respuesta_b']}", True, colores.WHITESMOKE)
+    texto_resp_c = fuente.render(f"c. {preg_selec['respuesta_c']}", True, colores.WHITESMOKE)
 
     rect_pregunta = texto_pregunta.get_rect(center=(coord_x_centro, y_inicial))
     rect_resp_a = texto_resp_a.get_rect(center=(coord_x_centro-espaciado, y_inicial+100))
@@ -209,12 +212,7 @@ def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
     tiempo_limite = 15000
     while flag_seguir:
         
-        ventana.fill(colores.WHITE)
-        pygame.draw.rect(ventana, colores.RED1, rect_pregunta)
-        pygame.draw.rect(ventana, colores.RED1, rect_resp_a)
-        pygame.draw.rect(ventana, colores.RED1, rect_resp_b)
-        pygame.draw.rect(ventana, colores.RED1, rect_resp_c)
-        
+        ventana.blit(fondo,(0,0))
         ventana.blit(texto_pregunta, rect_pregunta.topleft)
         ventana.blit(texto_resp_a, rect_resp_a.topleft)
         ventana.blit(texto_resp_b, rect_resp_b.topleft)
@@ -224,7 +222,7 @@ def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
         tiempo_restante_ms = tiempo_limite - (tiempo_actual - tiempo_inicio)
         tiempo_restante_seg = max(0, tiempo_restante_ms // 1000)
         
-        texto_timer = fuente.render(f"Tiempo: {tiempo_restante_seg}s", True, colores.BLACK)
+        texto_timer = fuente.render(f"Tiempo: {tiempo_restante_seg}s", True, colores.WHITESMOKE)
         ventana.blit(texto_timer, (ancho - texto_timer.get_width() - 10, 10))
         
         for evento in pygame.event.get():
@@ -257,7 +255,7 @@ def pantalla_preguntas(ventana, ancho, preguntas) -> bool:
     
     return res
 
-def aplica_escaleras(posicion) -> int:
+def aplica_escaleras(posicion:int) -> int:
     """
     Función que aplica el efecto de una escalera en la posición indicada.
 
@@ -269,14 +267,13 @@ def aplica_escaleras(posicion) -> int:
     """
     salto = serp_esc[posicion]
     if salto > 0:
-        print(f"¡Escalera! Avanzás {salto} casillas.")
         res = posicion + salto
     else:
         res = posicion
     
     return res
 
-def aplica_serpientes(posicion) -> int:
+def aplica_serpientes(posicion:int) -> int:
     """
     Función que aplica el efecto de una serpiente en la posición indicada.
 
@@ -288,14 +285,13 @@ def aplica_serpientes(posicion) -> int:
     """
     salto = serp_esc[posicion]
     if salto > 0:
-        print(f"¡Serpiente! Retrocedes {salto} casillas.")
         res = posicion - salto
     else:
         res = posicion
     
     return res
 
-def pantalla_sigue_jugando(ventana, ancho) -> any:
+def pantalla_sigue_jugando(ventana, ancho:int) -> any:
     """
     Función que muestra una pantalla para consultar al jugador si desea seguir jugando.
 
@@ -312,9 +308,9 @@ def pantalla_sigue_jugando(ventana, ancho) -> any:
     espaciado = 150
 
     fuente = pygame.font.SysFont("Arial", 22)
-    texto_seguir = fuente.render("¿Desea seguir jugando?", True, colores.BLACK)
-    texto_si = fuente.render("SI", True, colores.BLACK)
-    texto_no = fuente.render("NO", True, colores.BLACK)
+    texto_seguir = fuente.render("¿Desea seguir jugando?", True, colores.WHITESMOKE)
+    texto_si = fuente.render("SI", True, colores.WHITESMOKE)
+    texto_no = fuente.render("NO", True, colores.WHITESMOKE)
     
     rect_seguir = texto_seguir.get_rect(center=(coord_x_centro, y_inicial))
     rect_si = texto_si.get_rect(center=(coord_x_centro-espaciado, y_inicial+100))
@@ -323,13 +319,8 @@ def pantalla_sigue_jugando(ventana, ancho) -> any:
     res = None
     flag_seguir = True
     while flag_seguir:
-        
-        ventana.fill(colores.WHITE)
-        pygame.draw.rect(ventana, colores.RED1, rect_seguir)
-        pygame.draw.rect(ventana, colores.RED1, rect_si)
-        pygame.draw.rect(ventana, colores.RED1, rect_no)
 
-        # Dibujar textos encima
+        ventana.blit(fondo,(0,0))
         ventana.blit(texto_seguir, rect_seguir.topleft)
         ventana.blit(texto_si, rect_si.topleft)
         ventana.blit(texto_no, rect_no.topleft)
@@ -342,11 +333,9 @@ def pantalla_sigue_jugando(ventana, ancho) -> any:
             if evento.type == pygame.MOUSEBUTTONDOWN:
                     if evento.button == 1:
                         if rect_si.collidepoint(evento.pos):
-                            print("SI")
                             flag_seguir = False
                             res = True
                         elif rect_no.collidepoint(evento.pos):
-                            print("NO")
                             flag_seguir = False
                             res = False
 
@@ -354,7 +343,7 @@ def pantalla_sigue_jugando(ventana, ancho) -> any:
     
     return res
 
-def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> any:
+def pantalla_resultado_final(ventana, ancho:int, puntaje:int, posicion:int, resultado) -> any:
     """
     Función que muestra la pantalla de resultado final al terminar el juego,
     indicando si el jugador ganó o perdió, su posición y puntaje. en ammbos casos suena un audo de fondo dependiendo del resultado
@@ -373,15 +362,15 @@ def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> an
     y_inicial = 150
     espaciado = 150
     
-    sonido_gano = pygame.mixer.Sound("./pygame/sonido_gano.mp3")
-    sonido_perdio = pygame.mixer.Sound("./pygame/sonido_perdio.mp3")
+    sonido_gano = pygame.mixer.Sound("sonido_gano.mp3")
+    sonido_perdio = pygame.mixer.Sound("sonido_perdio.mp3")
 
     fuente = pygame.font.SysFont("Arial", 22)
-    texto_ganador = fuente.render("¡¡¡GANADOR!!!", True, colores.BLACK)
-    texto_termino_juego = fuente.render("Se terminó el juego", True, colores.BLACK)
-    texto_posicion= fuente.render(f"Usted terminó en la posición: {posicion}", True, colores.BLACK)
-    texto_puntaje= fuente.render(f"Su puntaje fue de: {puntaje}", True, colores.BLACK)
-    texto_menu= fuente.render("Menú", True, colores.BLACK)
+    texto_ganador = fuente.render("¡¡¡GANADOR!!!", True, colores.WHITESMOKE)
+    texto_termino_juego = fuente.render("Se terminó el juego", True, colores.WHITESMOKE)
+    texto_posicion= fuente.render(f"Usted terminó en la posición: {posicion}", True, colores.WHITESMOKE)
+    texto_puntaje= fuente.render(f"Su puntaje fue de: {puntaje}", True, colores.WHITESMOKE)
+    texto_menu= fuente.render("Menú", True, colores.WHITESMOKE)
     
     rect_ganador = texto_ganador.get_rect(center=(coord_x_centro, y_inicial))
     rect_termino_juego = texto_termino_juego.get_rect(center=(coord_x_centro, y_inicial))
@@ -399,7 +388,7 @@ def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> an
                 sonido_gano.play()
                 sonido_reproducido = True
             
-            ventana.fill(colores.WHITE)
+            ventana.blit(fondo,(0,0))
             ventana.blit(texto_ganador, rect_ganador.topleft)
             ventana.blit(texto_posicion, rect_posicion.topleft)
             ventana.blit(texto_puntaje, rect_puntajes.topleft)
@@ -421,8 +410,7 @@ def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> an
                 sonido_perdio.play()
                 sonido_reproducido = True
 
-            
-            ventana.fill(colores.WHITE)
+            ventana.blit(fondo,(0,0))
             ventana.blit(texto_termino_juego, rect_termino_juego.topleft)
             ventana.blit(texto_posicion, rect_posicion.topleft)
             ventana.blit(texto_puntaje, rect_puntajes.topleft)
@@ -442,7 +430,7 @@ def pantalla_resultado_final(ventana, ancho, puntaje, posicion, resultado) -> an
         pygame.display.flip()
     return res
 
-def ejecutar_juego(ventana, ancho, preguntas) -> str:
+def ejecutar_juego(ventana, ancho:int, preguntas:list) -> str:
     """
     Función principal que ejecuta el ciclo de juego, controlando el flujo de preguntas,
     movimiento del jugador en el tablero, aplicación de serpientes y escaleras,
@@ -458,20 +446,14 @@ def ejecutar_juego(ventana, ancho, preguntas) -> str:
     """
     res = None
     quiere_seguir = None
-    pos_jugador = 29
+    pos_jugador = 15
     puntaje = 0
     flag_preguntas = True
     ejecutando = True
     
-
     nombre_jugador = pantalla_ingreso_nombre(ventana)
-    print(nombre_jugador)
-    
-    if nombre_jugador == None:
-        return "salir"
     
     while ejecutando:
-        
         if len(preguntas) == 0:
             flag_preguntas = False
         else:
@@ -499,7 +481,6 @@ def ejecutar_juego(ventana, ancho, preguntas) -> str:
                                 puntaje = 0
                             pos_jugador = aplica_serpientes(pos_jugador)
                             quiere_seguir = pantalla_sigue_jugando(ventana,ancho)
-                        print(pos_jugador)
 
         ventana.blit(tablero, (0,0))
 
@@ -516,8 +497,8 @@ def ejecutar_juego(ventana, ancho, preguntas) -> str:
             resultado = "perdio"
             res = pantalla_resultado_final(ventana,ancho,puntaje,pos_jugador,resultado)
             guarda_puntaje(nombre_jugador, pos_jugador, puntaje)
-            
             ejecutando = False
+
         elif flag_preguntas == False:
             resultado = "perdio"
             res = pantalla_resultado_final(ventana,ancho,puntaje,pos_jugador,resultado)

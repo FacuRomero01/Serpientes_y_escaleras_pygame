@@ -15,16 +15,16 @@ def menu_principal(ventana, ancho):
             "puntajes" si se selecciona ver puntajes,
             o "salir" si se decide salir del juego
     """
-    fondo = pygame.image.load("./pygame/fondo.jpg")
+    fondo = pygame.image.load("fondo.jpg")
 
     coord_x_centro = ancho // 2
     y_inicial = 200
     espaciado = 100
 
     fuente = pygame.font.SysFont("Arial", 30)
-    texto_jugar = fuente.render("Jugar", True, colores.BLACK)
-    texto_puntajes = fuente.render("Puntajes", True, colores.BLACK)
-    texto_salir = fuente.render("Salir", True, colores.BLACK)
+    texto_jugar = fuente.render("Jugar", True, colores.WHITESMOKE)
+    texto_puntajes = fuente.render("Puntajes", True, colores.WHITESMOKE)
+    texto_salir = fuente.render("Salir", True, colores.WHITESMOKE)
 
     rect_jugar = texto_jugar.get_rect(center=(coord_x_centro, y_inicial))
     rect_puntajes = texto_puntajes.get_rect(center=(coord_x_centro, y_inicial + espaciado))
@@ -35,10 +35,6 @@ def menu_principal(ventana, ancho):
     while flag_correr:
 
         ventana.blit(fondo,(0,0))
-        pygame.draw.rect(ventana, colores.RED1, rect_jugar)
-        pygame.draw.rect(ventana, colores.RED1, rect_puntajes)
-        pygame.draw.rect(ventana, colores.RED1, rect_salir)
-
         ventana.blit(texto_jugar, rect_jugar.topleft)
         ventana.blit(texto_puntajes, rect_puntajes.topleft)
         ventana.blit(texto_salir, rect_salir.topleft)
